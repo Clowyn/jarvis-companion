@@ -1,0 +1,65 @@
+### Gradle & Java ###
+*.class
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/**/build/
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/**/out/
+
+.run/
+
+### Eclipse ###
+.apt_generated
+.classpath
+.eclipse/
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/**/bin/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+### Minecraft Modding ###
+run/
+!**/src/**/run/
+**/src/generated/**/.cache/
+repo/
+!**/src/**/repo/
+
+### Python & Virtual Environments ###
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+*/.venv/
+env/
+venv/
+.pytest_cache/
+
+### Environment & Secrets ###
+.env
+*.env
+!.env.example
+!**/.env.example
+
+### Jarvis Runtime & Bridge Artifacts ###
+.last_url
+*.last_url
+memory.json
+*/memory.json
+logs/
+.agents/
