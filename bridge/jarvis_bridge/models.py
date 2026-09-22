@@ -520,16 +520,3 @@ class ModListResponse(BaseModel):
     total_mods: int = 0
     mods: List[ModDetails] = Field(default_factory=list)
     error: Optional[str] = None
-
-
-class UltronResponse(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-
-    success: bool
-    quote: str
-    blindness_seconds: int = 15
-    error: Optional[str] = None
-
-
-
-

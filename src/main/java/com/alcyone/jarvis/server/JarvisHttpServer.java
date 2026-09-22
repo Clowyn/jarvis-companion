@@ -9,7 +9,6 @@ import com.alcyone.jarvis.server.handlers.ModpackHandler;
 import com.alcyone.jarvis.server.handlers.SayHandler;
 import com.alcyone.jarvis.server.handlers.StatusHandler;
 import com.alcyone.jarvis.server.handlers.SurroundingsHandler;
-import com.alcyone.jarvis.server.handlers.UltronHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -79,7 +78,6 @@ public class JarvisHttpServer {
             server.createContext("/api/companion", companionHandler);
             server.createContext("/api/companion/retrieve", companionHandler);
             server.createContext("/api/companion/deposit", companionHandler);
-            server.createContext("/api/companion/ultron", new UltronHandler());
 
             BuildHandler buildHandler = new BuildHandler();
             server.createContext("/api/companion/build", buildHandler);

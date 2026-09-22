@@ -43,7 +43,6 @@ from .models import (
     RecipeSearchResponse,
     MachineScanResponse,
     ModListResponse,
-    UltronResponse,
 )
 
 
@@ -537,18 +536,4 @@ class JarvisClient:
         resp = await client.get(f"{self.base_url}/api/modpack/mods")
         data = await self._handle_response(resp)
         return ModListResponse.model_validate(data)
-
-    async def trigger_ultron(self, quote: Optional[str] = None, blindness_seconds: int = 15) -> UltronResponse:
-        """POST /api/companion/ultron - Triggers the MCU Ultron jump-scare transformation event with 15s blindness."""
-        client = await self._get_client()
-        payload: Dict[str, Any] = {"blindness_seconds": blindness_seconds}
-        if quote:
-            payload["quote"] = quote
-        resp = await client.post(f"{self.base_url}/api/companion/ultron", json=payload)
-        data = await self._handle_response(resp)
-        return UltronResponse.model_validate(data)
-
-
-
-
 

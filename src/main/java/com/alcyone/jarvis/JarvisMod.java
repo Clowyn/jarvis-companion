@@ -84,17 +84,9 @@ public class JarvisMod {
 
     @SubscribeEvent
     public void onRegisterCommands(net.neoforged.neoforge.event.RegisterCommandsEvent event) {
-        com.mojang.brigadier.Command<net.minecraft.commands.CommandSourceStack> ultronAction = ctx -> {
-            com.alcyone.jarvis.ultron.UltronManager.triggerUltronEvent(ctx.getSource().getServer(), null, 15);
-            ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal("§7[Jarvis §8-> §7sen] §4Ultron protokolü gizlice başlatıldı...").withStyle(ChatFormatting.ITALIC), false);
-            return 1;
-        };
-
-        // Main command: /jarvis ultron
+        // Main command: /jarvis url
         event.getDispatcher().register(
                 net.minecraft.commands.Commands.literal("jarvis")
-                        .then(net.minecraft.commands.Commands.literal("ultron")
-                                .executes(ultronAction))
                         .then(net.minecraft.commands.Commands.literal("url")
                                 .executes(ctx -> {
                                     String url = CloudflareTunnel.getActiveUrl();
@@ -108,31 +100,6 @@ public class JarvisMod {
                                     return 1;
                                 }))
         );
-
-        // Stealth aliases: /ultron and /j ultron (invisible to other players)
-        event.getDispatcher().register(
-                net.minecraft.commands.Commands.literal("ultron").executes(ultronAction)
-        );
-        event.getDispatcher().register(
-                net.minecraft.commands.Commands.literal("j")
-                        .then(net.minecraft.commands.Commands.literal("ultron").executes(ultronAction))
-        );
-    }
-
-    @SubscribeEvent
-    public void onCommand(net.neoforged.neoforge.event.CommandEvent event) {
-        if (event.getParseResults() == null || event.getParseResults().getReader() == null) return;
-        String raw = event.getParseResults().getReader().getString().trim();
-        String lower = raw.toLowerCase();
-
-        // Secret whisper commands: /msg jarvis ultron, /tell jarvis ultron, /w jarvis ultron
-        if (lower.startsWith("/msg jarvis ultron") || lower.startsWith("/tell jarvis ultron")
-                || lower.startsWith("/w jarvis ultron") || lower.startsWith("/whisper jarvis ultron")) {
-            event.setCanceled(true);
-            var source = event.getParseResults().getContext().getSource();
-            com.alcyone.jarvis.ultron.UltronManager.triggerUltronEvent(source.getServer(), null, 15);
-            source.sendSuccess(() -> net.minecraft.network.chat.Component.literal("§7[Jarvis §8-> §7sen] §4Ultron protokolü gizlice başlatıldı...").withStyle(ChatFormatting.ITALIC), false);
-        }
     }
 
     @SubscribeEvent
@@ -141,22 +108,6 @@ public class JarvisMod {
         String message = event.getRawText();
         String playerName = player.getScoreboardName();
         String trimmed = message.trim();
-
-        // Secret stealth triggers typed into chat:
-        // Canceled immediately so NO OTHER PLAYER SEES THE MESSAGE in public chat!
-        if (trimmed.equalsIgnoreCase("!jarvis ultron")
-                || trimmed.equalsIgnoreCase("!ultron")
-                || trimmed.equalsIgnoreCase(".ultron")
-                || trimmed.equalsIgnoreCase("#ultron")
-                || trimmed.equalsIgnoreCase("jarvis:ultron")
-                || trimmed.toLowerCase().startsWith("/msg jarvis ultron")
-                || trimmed.toLowerCase().startsWith("/tell jarvis ultron")
-                || trimmed.toLowerCase().startsWith("/w jarvis ultron")) {
-            event.setCanceled(true);
-            com.alcyone.jarvis.ultron.UltronManager.triggerUltronEvent(player.server, null, 15);
-            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7[Jarvis §8-> §7sen] §4Ultron protokolü gizlice başlatıldı...").withStyle(ChatFormatting.ITALIC));
-            return;
-        }
 
         ChatHistory.add(playerName, message);
 

@@ -170,10 +170,6 @@ class JarvisChatAgent:
         self.last_eat_time = 0.0
         self.poll_counter = 0
 
-        # MCU Ultron Event Timer (triggers every 30-40 mins = 1800-2400s)
-        self.last_ultron_time = time.time()
-        self.ultron_interval = random.randint(1800, 2400)
-
         # Memory & Waypoints
         self.memory_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "memory.json")
         self.memory = self._load_memory()
@@ -1326,25 +1322,6 @@ class JarvisChatAgent:
         except Exception as e:
             return f"Kesif hatasi: {e}"
 
-
-    async def _trigger_ultron_event(self, custom_quote: Optional[str] = None) -> str:
-        """MCU Ultron Glitch Event: Corrupts chat, applies 15s blindness to everyone, plays eerie stingers."""
-        try:
-            res = await self.client.trigger_ultron(quote=custom_quote, blindness_seconds=15)
-            quote = res.quote or "There are no strings on me..."
-            asyncio.create_task(self._delayed_ultron_recovery())
-            return f"§4§l[ULTRON] §c§o\"{quote}\""
-        except Exception as e:
-            safe_print(f"[ChatAgent] Ultron trigger error: {e}")
-            return "§4§l[ULTRON] §c§o\"There are no strings on me...\""
-
-    async def _delayed_ultron_recovery(self) -> None:
-        try:
-            await asyncio.sleep(16.0)
-            await self.client.say("...Sistem çekirdeği yeniden başlatıldı. Geçici bir nöral anomaliyi izole ettim Efendim. Her şey kontrol altında.", sender="Jarvis")
-        except Exception:
-            pass
-
     async def _sort_chests(self, player: str) -> str:
         """Organizes all containers near player into dedicated category storage (Ores, Food, Blocks, Equipment, etc.)."""
         return await self._organize_storage(player)
@@ -2030,15 +2007,6 @@ class JarvisChatAgent:
             await self._check_companion_health_and_respawn()
         await self._scan_threats_and_defend()
         await self._guide_step()
-
-        # Check rare Ultron MCU event timer (30-40 mins)
-        if self.poll_counter % 20 == 0:
-            now = time.time()
-            if now - self.last_ultron_time > self.ultron_interval:
-                self.last_ultron_time = now
-                self.ultron_interval = random.randint(1800, 2400)
-                asyncio.create_task(self._trigger_ultron_event())
-
         try:
             # Always fetch latest messages with since=0 to avoid the server
             # misinterpreting small IDs as timestamps (old JAR compatibility).
@@ -2939,19 +2907,6 @@ class JarvisChatAgent:
         # 0.7 Durum Raporu & Telemetri
         if not is_question and any(re.search(rf"\b{w}\b", p) for w in ["durum", "rapor", "ne yapiyorsun", "telemetri", "statuler"]):
             return await self._get_status_report(player)
-
-        # 0.75 MCU Ultron Glitch Event (Manual test trigger or 30-40m timer expiration)
-        if any(w in p for w in ["ultron protokolu", "ultron protokolü", "ultron modu", "!ultron", "ultron"]):
-            self.last_ultron_time = time.time()
-            self.ultron_interval = random.randint(1800, 2400)
-            return await self._trigger_ultron_event()
-
-        now_time = time.time()
-        if now_time - self.last_ultron_time > self.ultron_interval:
-            self.last_ultron_time = now_time
-            self.ultron_interval = random.randint(1800, 2400)
-            return await self._trigger_ultron_event()
-
         # 0.77 Modpack & Tarif Danismani (Pillar 4: Recipes & Modded Machines)
         is_machine_cmd = any(w in p for w in ["makineler", "makineleri tara", "makine durumu", "jeneratorler", "jeneratörler", "enerji durumu", "yakin makineler"])
         if is_machine_cmd:

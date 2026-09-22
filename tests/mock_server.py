@@ -1320,15 +1320,6 @@ class MockMinecraftHandler(BaseHTTPRequestHandler):
             task = self.state.start_build(structure=structure, **extra)
             return self._send_json(200, {"success": True, "task": task})
 
-        elif path == "/api/companion/ultron":
-            quote = body.get("quote") or "There are no strings on me..."
-            blindness = int(body.get("blindness_seconds", 15))
-            return self._send_json(200, {
-                "success": True,
-                "quote": quote,
-                "blindness_seconds": blindness,
-            })
-
         self._send_error_json(404, "Endpoint not found")
 
     def do_PUT(self) -> None:
